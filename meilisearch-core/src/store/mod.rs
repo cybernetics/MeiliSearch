@@ -181,6 +181,10 @@ fn synonyms_name(name: &str) -> String {
     format!("store-{}-synonyms", name)
 }
 
+fn synonyms_unicased_name(name: &str) -> String {
+    format!("store-{}-synonyms-unicased", name)
+}
+
 fn docs_words_name(name: &str) -> String {
     format!("store-{}-docs-words", name)
 }
@@ -385,6 +389,7 @@ pub fn create(
     let documents_fields_name = documents_fields_name(name);
     let documents_fields_counts_name = documents_fields_counts_name(name);
     let synonyms_name = synonyms_name(name);
+    let synonyms_unicased_name = synonyms_unicased_name(name);
     let docs_words_name = docs_words_name(name);
     let prefix_documents_cache_name = prefix_documents_cache_name(name);
     let prefix_postings_lists_cache_name = prefix_postings_lists_cache_name(name);
@@ -399,6 +404,7 @@ pub fn create(
     let documents_fields_counts = env.create_database(Some(&documents_fields_counts_name))?;
     let facets = env.create_database(Some(&facets_name))?;
     let synonyms = env.create_database(Some(&synonyms_name))?;
+    let synonyms_unicased = env.create_database(Some(&synonyms_unicased_name))?;
     let docs_words = env.create_database(Some(&docs_words_name))?;
     let prefix_documents_cache = env.create_database(Some(&prefix_documents_cache_name))?;
     let prefix_postings_lists_cache = env.create_database(Some(&prefix_postings_lists_cache_name))?;
@@ -410,7 +416,7 @@ pub fn create(
         postings_lists: PostingsLists { postings_lists },
         documents_fields: DocumentsFields { documents_fields },
         documents_fields_counts: DocumentsFieldsCounts { documents_fields_counts },
-        synonyms: Synonyms { synonyms },
+        synonyms: Synonyms { synonyms, synonyms_unicased },
         docs_words: DocsWords { docs_words },
         prefix_postings_lists_cache: PrefixPostingsListsCache { prefix_postings_lists_cache },
         prefix_documents_cache: PrefixDocumentsCache { prefix_documents_cache },
@@ -434,6 +440,7 @@ pub fn open(
     let documents_fields_name = documents_fields_name(name);
     let documents_fields_counts_name = documents_fields_counts_name(name);
     let synonyms_name = synonyms_name(name);
+    let synonyms_unicased_name = synonyms_unicased_name(name);
     let docs_words_name = docs_words_name(name);
     let prefix_documents_cache_name = prefix_documents_cache_name(name);
     let facets_name = facets_name(name);
@@ -459,6 +466,10 @@ pub fn open(
         None => return Ok(None),
     };
     let synonyms = match env.open_database(Some(&synonyms_name))? {
+        Some(synonyms) => synonyms,
+        None => return Ok(None),
+    };
+    let synonyms_unicased = match env.open_database(Some(&synonyms_unicased_name))? {
         Some(synonyms) => synonyms,
         None => return Ok(None),
     };
@@ -492,7 +503,7 @@ pub fn open(
         postings_lists: PostingsLists { postings_lists },
         documents_fields: DocumentsFields { documents_fields },
         documents_fields_counts: DocumentsFieldsCounts { documents_fields_counts },
-        synonyms: Synonyms { synonyms },
+        synonyms: Synonyms { synonyms, synonyms_unicased },
         docs_words: DocsWords { docs_words },
         prefix_documents_cache: PrefixDocumentsCache { prefix_documents_cache },
         facets: Facets { facets },

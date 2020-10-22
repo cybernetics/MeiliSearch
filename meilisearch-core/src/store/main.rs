@@ -28,6 +28,7 @@ const SCHEMA_KEY: &str = "schema";
 const SORTED_DOCUMENT_IDS_CACHE_KEY: &str = "sorted-document-ids-cache";
 const STOP_WORDS_KEY: &str = "stop-words";
 const SYNONYMS_KEY: &str = "synonyms";
+const SYNONYMS_UNICASED_KEY: &str = "synonyms-unicased";
 const UPDATED_AT_KEY: &str = "updated-at";
 const WORDS_KEY: &str = "words";
 
@@ -206,6 +207,16 @@ impl Main {
         }
     }
 
+    /// returns the synonyms unicased, the way they were added by the user
+    pub fn synonyms_unicased(self, reader: &heed::RoTxn<MainT>) -> MResult<Vec<String>> {
+        Ok(self.main.get::<_, Str, SerdeBincode<Vec<String>>>(reader, SYNONYMS_UNICASED_KEY)?.unwrap_or_default())
+    }
+
+    pub fn put_synonyms_unicased(self, writer: &mut heed::RwTxn<MainT>, synonyms: &Vec<String>) -> MResult<()> {
+        Ok(self.main.put::<_, Str, SerdeBincode<Vec<String>>>(writer, SYNONYMS_UNICASED_KEY, synonyms)?)
+    }
+
+    /// returns the deunicased synonyms, for search purposes.
     pub fn synonyms(self, reader: &heed::RoTxn<MainT>) -> MResult<Vec<String>> {
         let synonyms = self
             .synonyms_fst(&reader)?

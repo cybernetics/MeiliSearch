@@ -302,12 +302,13 @@ pub fn apply_synonyms_update(
             alternatives_builder.into_set()
         };
 
-        synonyms_store.put_synonyms(writer, word.as_bytes(), &alternatives)?;
+        synonyms_store.put_synonyms(writer, &word, &alternatives)?;
     }
 
     let synonyms_set = synonyms_builder.into_set();
 
     main_store.put_synonyms_fst(writer, &synonyms_set)?;
+    main_store.put_synonyms_unicased(writer, &synonyms_set.stream().into_strs()?)?;
 
     Ok(())
 }

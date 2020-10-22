@@ -370,7 +370,7 @@ mod tests {
                 set_from_stream(alternatives.op().add(new.into_stream()).r#union());
             self.index
                 .synonyms
-                .put_synonyms(&mut writer, word.as_bytes(), &new_alternatives)
+                .put_synonyms(&mut writer, &word, &new_alternatives)
                 .unwrap();
 
             let synonyms = self.index.main.synonyms_fst(&writer).unwrap();

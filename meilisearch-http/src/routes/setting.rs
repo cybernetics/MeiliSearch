@@ -77,7 +77,7 @@ pub fn get_all_sync(data: &web::Data<Data>, reader: &MainReader, index_uid: &str
     let mut synonyms = BTreeMap::new();
     let index_synonyms = &index.synonyms;
     for synonym in synonyms_list {
-        let list = index_synonyms.synonyms(reader, synonym.as_bytes())?;
+        let list = index_synonyms.synonyms(reader, &synonym)?;
         synonyms.insert(synonym, list);
     }
 

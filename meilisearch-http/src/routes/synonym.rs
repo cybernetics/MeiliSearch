@@ -29,12 +29,12 @@ async fn get(
 
     let reader = data.db.main_read_txn()?;
 
-    let synonyms_list = index.main.synonyms(&reader)?;
+    let synonyms_list = index.main.synonyms_unicased(&reader)?;
 
     let mut synonyms = IndexMap::new();
     let index_synonyms = &index.synonyms;
     for synonym in synonyms_list {
-        let list = index_synonyms.synonyms(&reader, synonym.as_bytes())?;
+        let list = index_synonyms.synonyms_unicased(&reader, &synonym)?;
         synonyms.insert(synonym, list);
     }
 
